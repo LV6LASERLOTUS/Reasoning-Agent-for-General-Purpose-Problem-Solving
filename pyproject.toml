@@ -5,8 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "ddgs",
     "ipykernel>=7.1.0",
     "pandas>=2.3.3",
     "requests>=2.32.5",
     "tqdm>=4.67.1",
+    "wikipedia>=1.4.0",
 ]
+
+[tool.uv.sources]
+ddgs = { git = "https://github.com/deedy5/ddgs.git" }
