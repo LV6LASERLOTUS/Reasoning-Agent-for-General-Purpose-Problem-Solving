@@ -83,7 +83,7 @@ def get_sub_questions(question:str,temp:float=0.0)->list[str]:
 def get_sub_answers(question:str,temp:float=0.0)->list[dict[Any]]:
 
     sub_questions:list[str] = get_sub_questions(question)
-    sub_answers:list[dict[Any]]=[{}]
+    sub_answers:list[dict[Any]]=[]
 
     system=f'''
     You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
@@ -134,7 +134,7 @@ def chain_of_thought(question:str,temp:float=0.0)->str:
     You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
 
     You are generating the final answer to the original problem.
-
+    
     You must:
     - Think step-by-step internally, but DO NOT reveal chain-of-thought.
     - Use only the original question and the list of sub-answers.
@@ -168,17 +168,27 @@ def chain_of_thought(question:str,temp:float=0.0)->str:
 
 if __name__=='__main__':
 
-    question1=r'''
-        Jenn randomly chooses a number $J$ from $1, 2, 3,\ldots, 19, 20$ . Bela then randomly chooses a number $B$ from $1, 2, 3,\ldots, 19, 20$ distinct from $J$ . The value of $B - J$ is at least $2$ with a probability that can be expressed in the form $\tfrac{m}{n}$ , where $m$ and $n$ are relatively prime positive integers. Find $m+n$ .
-    '''
+    # answer 29
 
-    question2=r'''
-        Let $ABCD$ be a convex quadrilateral with $AB = CD = 10$ , $BC = 14$ , and $AD = 2\sqrt{65}$ . Assume that the diagonals of $ABCD$ intersect at point $P$ , and that the sum of the areas of triangles $APB$ and $CPD$ equals the sum of the areas of triangles $BPC$ and $APD$ . Find the area of quadrilateral $ABCD$ .
-    '''
+    question="""
+    Which magazine was started first Arthur's Magazine or First for Women?
+    """
 
-    print(question1)
-    # print(get_sub_questions(question))
-    print(chain_of_thought(question1))
+    print(question) 
+    
+    for q in get_sub_questions(question):
+        print(q)
+
+    for entry in get_sub_answers(question):
+        print('\n============== Sub Questions ===========\n')
+
+        print(entry['subq'])
+
+        print(entry['ans'])
+
+    print('\n============== Final Answer ===========\n')
+
+    print(chain_of_thought(question))
 
 
 
