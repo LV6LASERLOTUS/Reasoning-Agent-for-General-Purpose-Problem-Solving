@@ -4,7 +4,7 @@ import os
 import re
 import requests
 from typing import Any
-from tools import ToolBox
+from tools import search_wiki,search_browser,execute_python
 
 
 class Agent():
@@ -18,7 +18,7 @@ class Agent():
 
         # Track Model calls updates everytime call_model is called
         self.calls=0
-        
+    
     def self_refine(self):
         pass
     def react(self):
@@ -27,10 +27,12 @@ class Agent():
 	# Shared Components
 
     def chain_of_thought(
-        self, question:str, user_path:str,system_path:str
+        self, question:str, user_path:str
     )->str:
 
         #Load prompt
+        system_path='../prompts/chain_of_thought/system.txt'
+
         system_template=self.read_file(system_path)
         user_template = self.read_file(user_path)
         
@@ -39,6 +41,7 @@ class Agent():
         result = self.call_model(user,system_template)
 
         if result['text'] is None:
+            print(result)
             raise TimeoutError(result["error"])
         
         return result["text"]
@@ -104,7 +107,6 @@ class Agent():
 
 if __name__ == '__main__':
 
-    SYSTEM_PATH='../prompts/chain_of_thought/system.txt'
     USER_PATH='../prompts/chain_of_thought/user.txt'
 
     question=r"""
@@ -119,7 +121,7 @@ if __name__ == '__main__':
     )
 
     print(question) 
-    print(robotucus.chain_of_thought(question,USER_PATH,SYSTEM_PATH))
+    print(robotucus.chain_of_thought(question,USER_PATH))
     # for q in robotucus.get_sub_questions(question):
     #     print(q)
 
