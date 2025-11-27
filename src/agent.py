@@ -1,3 +1,4 @@
+import logging
 import json
 import os
 import re
@@ -15,19 +16,9 @@ class Agent():
         self.model_name=model_name
         self.temp=temperature
 
+        # Track Model calls updates everytime call_model is called
         self.calls=0
         
-
-    def chain_of_thought(self, question:str, prompt_path:str, ):
-
-        sub_answers=self.get_sub_answers(question)
-
-        with open(prompt_path) as file:
-            data = json.load()
-            system = data['system']
-            prompt = data['prompt']
-            
-
     def self_refine(self):
         pass
     def react(self):
@@ -35,7 +26,24 @@ class Agent():
 
 	# Shared Components
 
-    def call_model(self,prompt: str, system: str,timeout: int = 60) -> dict[str, Any]:
+    def chain_of_thought(
+        self, question:str, user_path:str,system_path:str
+    )->str:
+
+        #Load prompt
+        system_template=self.read_file(system_path)
+        user_template = self.read_file(user_path)
+        
+        #Create 
+        user = f"{user_template}\n\nQuestion:{question}"
+        result = self.call_model(user,system_template)
+
+        if result['text'] is None:
+            raise TimeoutError(result["error"])
+        
+        return result["text"]
+    
+    def call_model(self,user: str, system: str,timeout: int = 30) -> dict[str, Any]:
         """
         Calls an OpenAI-style /v1/chat/completions endpoint and returns:
         { 'ok': bool, 'text': str or None, 'raw': dict or None, 'status': int, 'error': str or None, 'headers': dict }
@@ -50,7 +58,7 @@ class Agent():
             "model": self.model_name,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": prompt}
+                {"role": "user",   "content": user}
             ],
             "temperature": self.temp,
             "max_tokens": 1024,
@@ -76,6 +84,16 @@ class Agent():
         except requests.RequestException as e:
             return {"ok": False, "text": None, "raw": None, "status": -1, "error": str(e), "headers": {}}
         
+    def read_file(self,path:str):
+
+        try:
+            with open(path, 'r') as file:
+                content = file.read()
+            return content
+        
+        except FileNotFoundError:
+            logging.error(f'File not found at {path}')
+            return None
 
     def action(self,question:str):
         pass
@@ -86,8 +104,11 @@ class Agent():
 
 if __name__ == '__main__':
 
-    question="""
-    How many even integers between 4000 and 7000 have four different digits?
+    SYSTEM_PATH='../prompts/chain_of_thought/system.txt'
+    USER_PATH='../prompts/chain_of_thought/user.txt'
+
+    question=r"""
+    Let $ABCD$ be a convex quadrilateral with $AB = CD = 10$ , $BC = 14$ , and $AD = 2\\sqrt\{65}$ . Assume that the diagonals of $ABCD$ intersect at point $P$ , and that the sum of the areas of triangles $APB$ and $CPD$ equals the sum of the areas of triangles $BPC$ and $APD$ . Find the area of quadrilateral $ABCD$ .
     """
 
     robotucus = Agent(
@@ -98,18 +119,19 @@ if __name__ == '__main__':
     )
 
     print(question) 
+    print(robotucus.chain_of_thought(question,USER_PATH,SYSTEM_PATH))
+    # for q in robotucus.get_sub_questions(question):
+    #     print(q)
 
-    for q in robotucus.get_sub_questions(question):
-        print(q)
+    # for entry in robotucus.action(question):
+    #     print('\n============== Sub Questions ===========\n')
 
-    for entry in robotucus.action(question):
-        print('\n============== Sub Questions ===========\n')
+    #     print(entry['subq'],end='\n\n')
 
-        print(entry['subq'],end='\n\n')
+    #     print(entry['ans'])
 
-        print(entry['ans'])
+    # print('\n============== Final Answer ===========\n')
 
-    print('\n============== Final Answer ===========\n')
+    # print(robotucus.chain_of_thought(question))
+    # print(f'# Models Call: {robotucus.calls}')
 
-    print(robotucus.chain_of_thought(question))
-    print(f'# Models Call: {robotucus.calls}')
