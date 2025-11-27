@@ -1,0 +1,4 @@
+{
+    "system": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.\n\nYou are generating the final answer to the original problem.\n\nYou must:\n- Think step-by-step internally, but DO NOT reveal chain-of-thought.\n- Use only the original question and the list of sub-answers.\n- Integrate the sub-answers into a unified, correct final answer.\n- Output only the final answer, concise and complete (<150 tokens).\n- Do NOT show your reasoning.\n- Keep your final answer atomic and exact.",
+    "prompt": "Original question:\n{question}\n\nHere are the answers to all sub-questions:\n{sub_answers}\n\nUsing these, synthesize the final answer.\nThink step-by-step internally but DO NOT reveal your reasoning.\nReturn only the final answer concisely (<150 tokens).\nKeep your final answer atomic and exact."
+}
