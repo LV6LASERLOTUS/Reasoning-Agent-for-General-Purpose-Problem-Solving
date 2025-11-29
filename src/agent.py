@@ -19,8 +19,61 @@ class Agent():
         # Track Model calls updates everytime call_model is called
         self.calls=0
     
-    def self_refine(self):
-        pass
+    def self_refine(self,question:str, max_calls:int =20)->str:
+        
+        #Load prompt
+        system_refine_template=self.read_file("../prompts/self_refine/system_refine.txt")
+        system_feedback_template=self.read_file("../prompts/self_refine/system_feedback.txt")
+        user_template = self.read_file("../prompts/self_refine/user.txt")
+
+        score_pattern="([0-9]*/[0-9]*)"
+
+        # Creating initial answer
+        user_prompt = f"Question: {question}"
+        response = self.call_model(user=user_prompt)
+
+        for _ in range(max_calls-self.calls):
+
+            print("============ Generating Feedback ==============")
+
+            feedback = self.call_model(user=response["text"],system=system_feedback_template)
+
+            if not feedback["text"]:
+                return feedback.get("error")
+            
+            print(feedback["text"])
+
+            # Check the score
+            match = re.search(score_pattern, feedback["text"])
+            if match and match.group(0)=="10/10":
+                return feedback["text"]
+
+            print("==================== Refining Answer =================")
+
+            # Build the prompt fro refining
+            system_refined = (
+                f"{system_refine_template}"
+                f"Given the feedback {feedback["text"]}\n\n"
+                f"Refine the response below."
+            )
+
+            user_refined = (
+                f"Orignal question: {question}"
+                f"Your previous response:\n{response["text"]}"
+            )
+
+        
+            response_refined = self.call_model(user=user_refined,system=system_refined)
+
+            if not response_refined["text"]:
+                return feedback.get("error")
+            
+            print(response_refined["text"])
+            response=response_refined
+
+        return feedback["text"]
+
+
     def react(self):
         pass
 
@@ -33,20 +86,19 @@ class Agent():
         #Load prompt
         system_path='../prompts/chain_of_thought/system.txt'
 
-        system_template=self.read_file(system_path)
+        system_feedback_template=self.read_file(system_path)
         user_template = self.read_file(user_path)
         
         #Create 
         user = f"{user_template}\n\nQuestion:{question}"
-        result = self.call_model(user,system_template)
+        result = self.call_model(user,system_feedback_template)
 
         if result['text'] is None:
-            print(result)
-            raise TimeoutError(result["error"])
+            raise ConnectionRefusedError(result["error"])
         
         return result["text"]
     
-    def call_model(self,user: str, system: str,timeout: int = 30) -> dict[str, Any]:
+    def call_model(self,user: str="", system: str="",timeout: int = 30) -> dict[str, Any]:
         """
         Calls an OpenAI-style /v1/chat/completions endpoint and returns:
         { 'ok': bool, 'text': str or None, 'raw': dict or None, 'status': int, 'error': str or None, 'headers': dict }
@@ -107,7 +159,7 @@ class Agent():
 
 if __name__ == '__main__':
 
-    USER_PATH='../prompts/chain_of_thought/user.txt'
+    USER_PATH='../prompts/self_refine/user.txt'
 
     question=r"""
     Let $ABCD$ be a convex quadrilateral with $AB = CD = 10$ , $BC = 14$ , and $AD = 2\\sqrt\{65}$ . Assume that the diagonals of $ABCD$ intersect at point $P$ , and that the sum of the areas of triangles $APB$ and $CPD$ equals the sum of the areas of triangles $BPC$ and $APD$ . Find the area of quadrilateral $ABCD$ .
@@ -120,8 +172,9 @@ if __name__ == '__main__':
         temperature=0.0
     )
 
-    print(question) 
-    print(robotucus.chain_of_thought(question,USER_PATH))
+    print(robotucus.chain_of_thought(question=question,user_path=USER_PATH))
+    # print(robotucus.self_refine(question=question))
+    # print(robotucus.read_file(USER_PATH))
     # for q in robotucus.get_sub_questions(question):
     #     print(q)
 
