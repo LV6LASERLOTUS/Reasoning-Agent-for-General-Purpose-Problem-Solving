@@ -76,7 +76,6 @@ class Agent():
     def react(self, question:str, max_calls:int = 20)->str:
         
         system_template = self.read_file('../prompts/react/system.txt')
-        user_template = self.read_file('../prompts/react/user.txt')
 
         toolbox={
             'search_wiki':search_wiki,
@@ -86,10 +85,11 @@ class Agent():
         action_pattern=r"Action: (\w+)"
         input_pattern=r"Input: (.+)"
         
-
         user_prompt=question
 
         for _ in range(max_calls-self.calls):
+
+            
             response = self.call_model(user_prompt, system=system_template)
             print(response["text"])
             if "Answer:" in response["text"]:
@@ -98,6 +98,7 @@ class Agent():
             action_match = re.search(action_pattern,response["text"])
             input_match = re.search(input_pattern,response["text"])
 
+            # Determine the action called by the model
             if action_match:
                 action_response = toolbox[action_match.group(1)](input_match.group(1))
                 action_response = self.summarize_reasoning(str(action_response))
@@ -105,6 +106,7 @@ class Agent():
                 user_prompt+=f"\nObservation: {action_response}"
                 continue
 
+            # If not action was called,append previous response to continue reasoning
             previous_response = self.summarize_reasoning(response["text"])
             user_prompt=f"\nPrevious response: {previous_response}"
             
