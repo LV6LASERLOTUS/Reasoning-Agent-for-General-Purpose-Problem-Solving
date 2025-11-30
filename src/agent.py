@@ -4,7 +4,7 @@ import os
 import re
 import requests
 from typing import Any,List
-from tools import search_wiki,search_browser
+from .tools import search_wiki,search_browser
 
 
 class Agent():
@@ -22,34 +22,32 @@ class Agent():
     def self_refine(self, question:str, max_calls:int = 10)->str:
         
         #Load prompt
-        system_refine_template=self.read_file("../prompts/self_refine/system_refine.txt")
-        system_feedback_template=self.read_file("../prompts/self_refine/system_feedback.txt")
+        system_refine_template=self.read_file("./prompts/self_refine/system_refine.txt")
+        system_feedback_template=self.read_file("./prompts/self_refine/system_feedback.txt")
 
         score_pattern="([0-9]*/[0-9]*)"
 
         # Creating initial answer
         user_prompt = f"Question: {question}"
         response = self.call_model(user=user_prompt)
+        self.calls=0
 
         for _ in range(max_calls-self.calls):
 
-            print("============ Generating Feedback ==============")
 
             feedback = self.call_model(user=response["text"],system=system_feedback_template)
 
             if not feedback["text"]:
+                self.calls=0
                 return feedback.get("error")
             
-            print(feedback["text"])
-
             # Check the score
             match = re.search(score_pattern, feedback["text"])
             if match and match.group(0)=="10/10":
+                self.calls=0
                 return feedback["text"]
 
-            print("==================== Refining Answer =================")
-
-            # Build the prompt fro refining
+            # Build the prompt for refining
             system_refined = (
                 f"{system_refine_template}"
                 f"Given the feedback {feedback["text"]}\n\n"
@@ -63,19 +61,17 @@ class Agent():
 
         
             response_refined = self.call_model(user=user_refined,system=system_refined)
-
+            
             if not response_refined["text"]:
                 return feedback.get("error")
             
-            print(response_refined["text"])
             response=response_refined
 
         return feedback["text"]
         
-
     def react(self, question:str, max_calls:int = 20)->str:
         
-        system_template = self.read_file('../prompts/react/system.txt')
+        system_template = self.read_file('./prompts/react/system.txt')
 
         toolbox={
             'search_wiki':search_wiki,
@@ -86,23 +82,33 @@ class Agent():
         input_pattern=r"Input: (.+)"
         
         user_prompt=question
+        self.calls=0
 
         for _ in range(max_calls-self.calls):
 
             
             response = self.call_model(user_prompt, system=system_template)
-            print(response["text"])
+        
+            if not response["text"]:
+                self.calls=0
+                return response.get("error")
+                        
             if "Answer:" in response["text"]:
+                self.calls=0
                 return response["text"]
             
             action_match = re.search(action_pattern,response["text"])
             input_match = re.search(input_pattern,response["text"])
 
             # Determine the action called by the model
-            if action_match:
-                action_response = toolbox[action_match.group(1)](input_match.group(1))
+            action = action_match.group(1) if action_match else None
+            system_input = input_match.group(1) if input_match else None
+
+            # Call tools
+            if action in toolbox:
+                action_response = toolbox[action](system_input)
                 action_response = self.summarize_reasoning(str(action_response))
-                print(f"\nObservation: {action_response}\n")
+
                 user_prompt+=f"\nObservation: {action_response}"
                 continue
 
@@ -112,44 +118,37 @@ class Agent():
             
         return "Answer wasn't reach in <20 calls"
 
-
-
-            
-        # Get action response
-
-
-
     def chain_of_thought(self, question:str, max_calls:int = 20)->str:
         """Utilizes ITerative Chain Reasoning"""
 
         #Load prompt
-        system_template=self.read_file('../prompts/chain_of_thought/system.txt')
+        system_template=self.read_file('./prompts/chain_of_thought/system.txt')
         
-        #Create initial prompt
+        # Initialize prompt, chat log, calls
         user = f"Please solve the following problem step-by-step:\n\nQuestion:{question}"
         chat_log=[]
+        self.calls=0
 
-        for i in range(max_calls-self.calls):
+        for _ in range(max_calls-self.calls):
             
-            print(f"=========================== Prompt =====================")
-            print(user)
             response = self.call_model(user,system_template)
 
             if not response['text']:
+                self.calls=0
                 return response.get("error")
-        
-            print(f"=========================== {i} =====================")
-            print(response["text"])
             
             if "Answer" in response["text"]:
-                return response["text"]
+                # Set calls back to zero 
+                self.calls=0
+                answer = self.parse_answer(response["text"])
+                return answer
 
             chat_log.append(self.summarize_reasoning(response["text"]))
 
             user = f"Question: {question}\n\nPrevious Reasoning:\n\n{''.join(chat_log)}"
 
-        return response["text"]
-    
+        return "Answer wasn't reach in <20 calls"
+
     
     # Shared Components
 
@@ -230,6 +229,15 @@ class Agent():
             logging.error(f'File not found at {path}')
             return None
 
+    def parse_answer(self,response: str)->str:
+
+        answer_pattern=r"Answer: (.+)"
+
+        match = re.search(answer_pattern,response)
+
+        answer = match.group(1) if match else 'no answer'
+
+        return answer
 
 if __name__ == '__main__':
 
@@ -247,7 +255,7 @@ if __name__ == '__main__':
         temperature=0.0
     )
 
-    robotucus.react(question=question)
+    print(robotucus.chain_of_thought(question))
     # print(robotucus.self_refine(question=question))
     # print(robotucus.read_file(USER_PATH))
     # for q in robotucus.get_sub_questions(question):
