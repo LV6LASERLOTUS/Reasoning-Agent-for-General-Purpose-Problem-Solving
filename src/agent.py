@@ -4,7 +4,7 @@ import os
 import re
 import requests
 from typing import Any,List
-from tools import search_wiki,search_browser,execute_python
+from tools import search_wiki,search_browser
 
 
 class Agent():
@@ -19,7 +19,7 @@ class Agent():
         # Track Model calls updates everytime call_model is called
         self.calls=0
     
-    def self_refine(self,question:str, max_calls:int=20)->str:
+    def self_refine(self, question:str, max_calls:int = 10)->str:
         
         #Load prompt
         system_refine_template=self.read_file("../prompts/self_refine/system_refine.txt")
@@ -71,14 +71,53 @@ class Agent():
             response=response_refined
 
         return feedback["text"]
+        
+
+    def react(self, question:str, max_calls:int = 20)->str:
+        
+        system_template = self.read_file('../prompts/react/system.txt')
+        user_template = self.read_file('../prompts/react/user.txt')
+
+        toolbox={
+            'search_wiki':search_wiki,
+            'search_browser': search_browser,
+        }
+
+        action_pattern=r"Action: (\w+)"
+        input_pattern=r"Input: (.+)"
+        
+
+        user_prompt=question
+
+        for _ in range(max_calls-self.calls):
+            response = self.call_model(user_prompt, system=system_template)
+            print(response["text"])
+            if "Answer:" in response["text"]:
+                return response["text"]
+            
+            action_match = re.search(action_pattern,response["text"])
+            input_match = re.search(input_pattern,response["text"])
+
+            if action_match:
+                action_response = toolbox[action_match.group(1)](input_match.group(1))
+                action_response = self.summarize_reasoning(str(action_response))
+                print(f"\nObservation: {action_response}\n")
+                user_prompt+=f"\nObservation: {action_response}"
+                continue
+
+            previous_response = self.summarize_reasoning(response["text"])
+            user_prompt=f"\nPrevious response: {previous_response}"
+            
+        return "Answer wasn't reach in <20 calls"
 
 
-    def react(self):
-        pass
 
-	# Shared Components
+            
+        # Get action response
 
-    def chain_of_thought(self, question:str, max_calls:int=20)->str:
+
+
+    def chain_of_thought(self, question:str, max_calls:int = 20)->str:
         """Utilizes ITerative Chain Reasoning"""
 
         #Load prompt
@@ -110,7 +149,9 @@ class Agent():
         return response["text"]
     
     
-    def call_model(self,user: str="", system: str="",timeout: int = 30) -> dict[str, Any]:
+    # Shared Components
+
+    def call_model(self, user:str="", system:str="", timeout:int = 30) -> dict[str, Any]:
         """
         Calls an OpenAI-style /v1/chat/completions endpoint and returns:
         { 'ok': bool, 'text': str or None, 'raw': dict or None, 'status': int, 'error': str or None, 'headers': dict }
@@ -151,7 +192,7 @@ class Agent():
         except requests.RequestException as e:
             return {"ok": False, "text": None, "raw": None, "status": -1, "error": str(e), "headers": {}}
 
-    def summarize_reasoning(self,chat_log:str)->str:
+    def summarize_reasoning(self, chat_log:str)->str:
         """ Summarize the reasoning so far"""
         summary= self.call_model(
             chat_log,
@@ -175,8 +216,9 @@ class Agent():
 
         return summary["text"]
 
-    def read_file(self,path:str):
+    def read_file(self, path:str)->str:
 
+        """Reads in txt given a path string"""
         try:
             with open(path, 'r') as file:
                 content = file.read()
@@ -192,7 +234,7 @@ if __name__ == '__main__':
     USER_PATH='../prompts/self_refine/user.txt'
 
     question=r"""
-    Compute $\\sqrt{(31)(30)(29)(28)+1}$ .
+    In a new school, $40$ percent of the students are freshmen, $30$ percent are sophomores, $20$ percent are juniors, and $10$ percent are seniors. All freshmen are required to take Latin, and $80$ percent of sophomores, $50$ percent of the juniors, and $20$ percent of the seniors elect to take Latin. The probability that a randomly chosen Latin student is a sophomore is $\\frac{m}{n}$ , where $m$ and $n$ are relatively prime positive integers. Find $m+n$ .
     """
     #869
     
@@ -203,7 +245,7 @@ if __name__ == '__main__':
         temperature=0.0
     )
 
-    print(robotucus.self_refine(question=question))
+    robotucus.react(question=question)
     # print(robotucus.self_refine(question=question))
     # print(robotucus.read_file(USER_PATH))
     # for q in robotucus.get_sub_questions(question):
