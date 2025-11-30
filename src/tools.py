@@ -16,28 +16,25 @@ def search_wiki(input:str)->str:
         
         #merge suggestion with actual result inside the wiki
 
-        if suggestion:
+        if suggestion and result is not None:
+            result.append(suggestion)
+            return f"Page not found do you wanna try searching {result} instead"
 
-            suggestions = result.append(suggestion)
-            return f"Page not found do you wanna try searching {suggestions} instead"
-
-        return f"Page not found do you wanna try searching one of {result} instead"
+        return f"Page not found"
     
 def search_browser(input):
     search = DDGS()
     try:
-        result = search.text(input,max_result=2)
-    
+        results = search.text(input,max_result=2)
+        content = {result['title']:result['body'] for result in results}
+        return content
     except Exception as e:
         print(e)
-        return
-
-def execute_python():
-    ...
+        return None
 
 
 if __name__ =='__main__':
 
-    input="1 + 1"
+    input="755161"
     output=search_wiki(input)
     print(output)
