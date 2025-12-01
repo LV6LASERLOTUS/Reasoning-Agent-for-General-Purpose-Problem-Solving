@@ -38,14 +38,14 @@ class Agent():
             feedback = self.call_model(user=response["text"],system=system_feedback_template)
 
             if not feedback["text"]:
-                self.calls=0
                 return feedback.get("error")
             
-            # Check the score
             match = re.search(score_pattern, feedback["text"])
+
+            # Check the score, return is reach 10 out of 10
             if match and match.group(0)=="10/10":
-                self.calls=0
-                return feedback["text"]
+                answer = self.parse_answer(response["text"])
+                return answer
 
             # Build the prompt for refining
             system_refined = (
@@ -67,7 +67,8 @@ class Agent():
             
             response=response_refined
 
-        return feedback["text"]
+        answer = self.parse_answer(response["text"])
+        return answer
         
     def react(self, question:str, max_calls:int = 20)->str:
         
@@ -90,12 +91,11 @@ class Agent():
             response = self.call_model(user_prompt, system=system_template)
         
             if not response["text"]:
-                self.calls=0
                 return response.get("error")
-                        
+  
             if "Answer:" in response["text"]:
-                self.calls=0
-                return response["text"]
+                answer = self.parse_answer(response["text"])
+                return answer
             
             action_match = re.search(action_pattern,response["text"])
             input_match = re.search(input_pattern,response["text"])
@@ -134,12 +134,10 @@ class Agent():
             response = self.call_model(user,system_template)
 
             if not response['text']:
-                self.calls=0
                 return response.get("error")
             
             if "Answer" in response["text"]:
                 # Set calls back to zero 
-                self.calls=0
                 answer = self.parse_answer(response["text"])
                 return answer
 
