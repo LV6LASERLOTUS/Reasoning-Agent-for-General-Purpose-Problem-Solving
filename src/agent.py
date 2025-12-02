@@ -27,8 +27,7 @@ class Agent():
         self.calls=0
     
     def self_refine(self, question: str, max_calls: int = 10) -> str:
-        """
-        Runs the Self-Refine algorithm for a given question.
+        """Runs the Self-Refine algorithm for a given question.
 
         The model iteratively generates a response, requests feedback,
         and refines the response until it achieves a score of 8/10 or if the
@@ -96,8 +95,7 @@ class Agent():
         return self.parse_answer(response["text"])
         
     def react(self, question: str, max_calls: int = 20) -> str:
-        """ 
-        Runs the ReAct (Reason + Act) algorithm to answer a user question.
+        """Runs the ReAct (Reason + Act) algorithm to answer a user question.
 
         The model iteratively generates reasoning steps and tool calls in the format:
 
@@ -161,8 +159,7 @@ class Agent():
         return "Answer wasn't reach in <20 calls"
 
     def chain_of_thought(self, question: str, max_calls: int = 20) -> str:
-        """
-        Runs iterative chain-of-thought reasoning using repeated model calls.
+        """Runs iterative chain-of-thought reasoning using repeated model calls.
 
         This method iteratively calls the model, each time summarizing the
         previous reasoning steps and feeding them back as context, until 
@@ -253,8 +250,7 @@ class Agent():
             return {"ok": False, "text": None, "raw": None, "status": -1, "error": str(e), "headers": {}}
 
     def summarize_response(self, response: str) -> str:
-        """
-        Summarize the response of the model
+        """Summarize the response of the model
 
         This method calls the model to summarize a text, returning the summarize text
         and the next step of action.
@@ -287,8 +283,7 @@ class Agent():
         return summary["text"]
 
     def parse_answer(self, response: str) -> str:
-        """
-        Parse the answer from the response from a model
+        """Parse the answer from the response from a model
 
         This method uses regex to parse out the text after "Answer: ".
 
