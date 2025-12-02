@@ -1,3 +1,4 @@
+![Python >=3.10](https://img.shields.io/badge/python-%3E=3.10-blue)
 
 # Reasoning Agent for General Purpose Problem Solving
 
@@ -22,10 +23,6 @@ language models.
 
 
 ## 🚀 Getting Started
-### Prerequisites
-- Python>=3.14
-- git
-- pip/uv 
 
 #### Installing with UV
 
