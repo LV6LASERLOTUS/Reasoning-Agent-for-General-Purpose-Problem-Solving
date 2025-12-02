@@ -14,11 +14,11 @@ language models.
 
 ## 📚 Contents
 
-- [Getting Started](#Getting-Started)
+- [Getting Started](#-Getting-Started)
 
-  - [Example](#Example)
+- [Example](#-Example)
 
-- [Evaluation](#Evaluation)
+- [Evaluation](#-Evaluation)
 
 
 ## 🚀 Getting Started
@@ -48,7 +48,7 @@ pip install requirements.txt
 
 ```
 
-### 🔍 Example
+## 🔍 Example
 
 Below is a simple example using the Chain of thought algorithm with a Qwen Model.
 
