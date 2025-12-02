@@ -43,8 +43,8 @@ class Agent():
         """
         
         #Load system prompt
-        system_refine_template = read_file("./prompts/self_refine/system_refine.txt")
-        system_feedback_template = read_file("./prompts/self_refine/system_feedback.txt")
+        system_refine_template = read_file("../prompts/self_refine/system_refine.txt")
+        system_feedback_template = read_file("../prompts/self_refine/system_feedback.txt")
 
         score_pattern = "([0-9]*/[0-9]*)"
         self.calls = 0
@@ -112,7 +112,7 @@ class Agent():
             str: The model's final answer or "Answer wasn't reach in <20 calls"
         """   
 
-        system_template = read_file("./prompts/react/system.txt")
+        system_template = read_file("../prompts/react/system.txt")
 
         # Map tool (action) name to it's function
         toolbox={
@@ -173,7 +173,7 @@ class Agent():
             str: The model's final answr or "Answer wasn't reach in <20 calls"
         """
 
-        system_template = read_file("./prompts/chain_of_thought/system.txt")
+        system_template = read_file("../prompts/chain_of_thought/system.txt")
         
         # Initialize the base user_prompts and empty chat log
         user_prompt = f"Please solve the following problem step-by-step:\n\nQuestion:{question}"
