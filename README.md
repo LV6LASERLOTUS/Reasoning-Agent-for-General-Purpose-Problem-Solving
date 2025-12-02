@@ -12,18 +12,51 @@ This project explores and implements three different inference-time reasoning al
 The purpose of this project is to understand the strengths, limitations, and practical applications of these algorithms, providing insights into how different reasoning strategies can impact the accuracy, reliability, and versatility of 
 language models.
 
-## Table of Contents
+## 📚 Contents
 
 - [Getting Started](#Getting-Started)
-- Inference Time Algorithms
-  - Iterative Chain of Thought
-  - Self Refine
-  - ReAct 
-- Evaluation
-- Improvements
+
+- [Example](#-Example)
+
+- [Evaluation](#-Evaluation)
 
 
-### Getting Started
+## 🚀 Getting Started
+### Prerequisites
+- Python>=3.14
+- git
+- pip/uv 
 
-### Inference Time Algorithms
-  #### Iterative Chain of Thought
+#### Installing with UV
+
+> DO NOT activate your virtual environment or else uv will create and manage one automatically
+```
+git clone https://github.com/LV6LASERLOTUS/Reasoning-Agent-for-General-Purpose-Problem-Solving.git
+
+# Set up python environment
+pip install uv
+uv sync
+```
+#### Installing with Pip
+```
+git clone https://github.com/LV6LASERLOTUS/Reasoning-Agent-for-General-Purpose-Problem-Solving.git
+cd Reasoning-Agent-for-General-Purpose-Problem-Solving
+# Setup Python evironment
+
+python -m venv .venv
+pip install requirements.txt
+
+```
+
+### 🛠️ Example
+
+Below is a simple example using the Chain of thought algorithm with a Qwen Model.
+
+<img width="1049" height="417" alt="Screenshot 2025-12-02 at 1 22 23 AM" src="https://github.com/user-attachments/assets/036f4a60-c2ac-404e-bb12-7877ef801cf6" />
+
+## Features
+- Structured to handle limited token size and calls
+- 
+
+## 📊 Evaluation
+The evaluation was done mainly through scripts and model grading.
