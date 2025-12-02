@@ -29,7 +29,7 @@ language models.
 
 #### Installing with UV
 
-> DO NOT activate your virtual environment or else uv will create and manage one automatically
+> DO NOT activate your virtual environment , uv will create and manage one automatically
 ```
 git clone https://github.com/LV6LASERLOTUS/Reasoning-Agent-for-General-Purpose-Problem-Solving.git
 
