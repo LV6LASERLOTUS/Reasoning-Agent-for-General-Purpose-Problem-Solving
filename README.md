@@ -24,7 +24,7 @@ language models.
   - [Project Structure](#Project-Structure)
   - [Self-Refine](#Self-Refine)
   - [ReAct](#ReAct)
-  - [Iterative Chain of Thought (CoT)](#Iterative-Chain-of-Thought-(CoT))
+  - [Iterative Chain of Thought (CoT)](#iterative-chain-of-thought-cot)
 
 - [Evaluation](#-Evaluation)
 
