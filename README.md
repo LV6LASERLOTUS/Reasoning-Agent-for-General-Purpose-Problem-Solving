@@ -8,7 +8,7 @@ This project explores and implements three different inference-time reasoning al
 
 - [**ReAct (Reason + Act)**](https://arxiv.org/pdf/2210.03629) : A hybrid of reasoning and action framework where the model can not only think through a problem but also take external actions such as searching Wikipedia or browsing the web to gather additional context or evidence.
 
-- [**Iterative Chain of Thought (CoT)**]([https://arxiv.org/pdf/2201.11903]) : A method where the model generates intermediate reasoning steps iteratively, improving accuracy by breaking complex problems into smaller, manageable steps.
+- [**Iterative Chain of Thought (CoT)**](https://arxiv.org/pdf/2201.11903) : A method where the model generates intermediate reasoning steps iteratively, improving accuracy by breaking complex problems into smaller, manageable steps.
 
 The purpose of this project is to understand the strengths, limitations, and practical applications of these algorithms, providing insights into how different reasoning strategies can impact the accuracy, reliability, and versatility of 
 language models.
