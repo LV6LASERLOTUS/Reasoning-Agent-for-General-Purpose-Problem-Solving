@@ -22,9 +22,9 @@ language models.
 - [Implementation Explanation](#-Implementation-Explanation)
 
   - [Project Structure](#Project-Structure)
-  - [Self-Refine](url)
-  - [ReAct](url)
-  - [Iterative Chain of Thought (CoT)](url)
+  - [Self-Refine](#Self-Refine)
+  - [ReAct](#ReAct)
+  - [Iterative Chain of Thought (CoT)](#Iterative-Chain-of-Thought-(CoT))
 
 - [Evaluation](#-Evaluation)
 
