@@ -24,7 +24,7 @@ language models.
   - [Project Structure](#Project-Structure)
   - [Self-Refine](#Self-Refine)
   - [ReAct](#ReAct)
-  - [Iterative Chain of Thought (CoT)](#iterative-chain-of-thought-cot)
+  - [Iterative Chain of Thought (CoT)](#Iterative-chain-of-thought-cot)
 
 - [Evaluation](#-Evaluation)
 
@@ -64,6 +64,8 @@ To use a inference time algorithm
 
 <img width="983" height="395" alt="Screenshot 2025-12-02 at 11 23 29 PM" src="https://github.com/user-attachments/assets/625159ea-5198-4709-b729-9690c05d2640" />
 
+[back to 📚 Contents](#-contents)
+
 ## 🧩 Implementation Explanation
 
 ### Project Structure
@@ -90,6 +92,8 @@ This approach helps the agent iteratively improve output quality by using the mo
 
 <img width="853" height="320" alt="Screenshot 2025-12-02 at 11 22 58 PM" src="https://github.com/user-attachments/assets/70c47d30-1f4d-4935-94c1-e30741f940f1" />
 
+[back to 📚 Contents](#-contents)
+
 ### ReAct
 
 Inspired by [[Yao et al., 2022](https://arxiv.org/pdf/2210.03629)], the ReAct-style controller uses few-shot prompting to decide whether the model should take an external action.
@@ -106,6 +110,8 @@ Inspired by [[Yao et al., 2022](https://arxiv.org/pdf/2210.03629)], the ReAct-st
 This pattern lets the agent combine thinking and acting, using external knowledge only when needed to improve its own response's factual correctness.
 
 <img width="790" height="666" alt="Screenshot 2025-12-03 at 12 19 11 AM" src="https://github.com/user-attachments/assets/0c263c85-d34a-453f-8d8b-5c69dfc20364" />
+
+[back to 📚 Contents](#-contents)
 
 ### Iterative Chain of Thought (CoT)
 
@@ -127,5 +133,14 @@ This design preserves context across iterations while keeping prompts short and 
 
 <img width="858" height="429" alt="Screenshot 2025-12-02 at 11 41 40 PM" src="https://github.com/user-attachments/assets/e3a12fde-9879-47ca-8ce2-3991f0cb83e8" />
 
+[back to 📚 Contents](#-contents)
+
+
 ## 📊 Evaluation
-The evaluation was done mainly through scripts and model grading.
+
+The evaluation was conducted using two main methods:
+
+- Model-based Evaluation: The model was given a strict-grader system prompt and then provided with the question, the algorithm-derived answer, and the ground-truth answer.
+- Direct Comparison: After normalizing and cleaning the model’s output, it was compared directly against the correct answer.
+
+[back to 📚 Contents](#-contents)
