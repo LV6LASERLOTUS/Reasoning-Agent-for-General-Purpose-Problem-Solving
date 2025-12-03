@@ -113,7 +113,7 @@ This pattern lets the agent combine thinking and acting, using external knowledg
 
 [back to 📚 Contents](#-contents)
 
-### Iterative Chain of Thought (CoT): `chain_of_thought(question: str, max_calls: int)`
+### Iterative Chain of Thought: `chain_of_thought(question: str, max_calls: int)`
 
 Inspired by [[Wei et al., 2022]([url](https://arxiv.org/pdf/2201.11903))], the Iterative CoT prompts the model to produce step-by-step reasoning for a question. 
 
