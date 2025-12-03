@@ -21,7 +21,7 @@ language models.
 
 - [Implementation Explanation](#-Implementation-Explanation)
 
-  - [Project Structure](#Iterative-Chain-of-Thought-(CoT))
+  - [Project Structure](##Iterative-Chain-of-Thought-(CoT))
   - [Self-Refine](url)
   - [ReAct](url)
   - [Iterative Chain of Thought (CoT)](url)
