@@ -76,7 +76,7 @@ To use a inference time algorithm
 - `prompts/` : Contains all the system prompt used by the agent divided into each folder
 - `dataset/`: Contains the zip file of the training and test question dataset
 
-### Self-Refine
+### Self-Refine: `self_refine(question: str, max_calls: int)`
 
 Inspired by [[Madaan et al., 2023](https://arxiv.org/pdf/2303.17651)], the Self-Refine loop works like this:
 
@@ -94,7 +94,7 @@ This approach helps the agent iteratively improve output quality by using the mo
 
 [back to 📚 Contents](#-contents)
 
-### ReAct
+### ReAct: `react(question: str, max_calls: int)`
 
 Inspired by [[Yao et al., 2022](https://arxiv.org/pdf/2210.03629)], the ReAct-style controller uses few-shot prompting to decide whether the model should take an external action.
 
@@ -113,7 +113,7 @@ This pattern lets the agent combine thinking and acting, using external knowledg
 
 [back to 📚 Contents](#-contents)
 
-### Iterative Chain of Thought (CoT)
+### Iterative Chain of Thought (CoT): `chain_of_thought(question: str, max_calls: int)`
 
 Inspired by [[Wei et al., 2022]([url](https://arxiv.org/pdf/2201.11903))], the Iterative CoT prompts the model to produce step-by-step reasoning for a question. 
 
